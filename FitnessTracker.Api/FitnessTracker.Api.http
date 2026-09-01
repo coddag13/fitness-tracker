@@ -1,6 +1,13 @@
 @FitnessTracker.Api_HostAddress = http://localhost:5165
 
-GET {{FitnessTracker.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{FitnessTracker_Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Danilo",
+  "lastName": "Test",
+  "email": "danilo@example.com",
+  "password": "Trening123"
+}
 
 ###

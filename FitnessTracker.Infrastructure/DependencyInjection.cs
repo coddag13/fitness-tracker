@@ -3,6 +3,9 @@ using FitnessTracker.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using FitnessTracker.Application.Authentication.Interfaces;
+using FitnessTracker.Infrastructure.Authentication;
+using FitnessTracker.Infrastructure.Authentication.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +42,25 @@ namespace FitnessTracker.Infrastructure
                         TimeSpan.FromMinutes(5);
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddOptions<JwtSettings>().Bind(configuration.GetSection(JwtSettings.SectionName))
+                .Validate(
+                    settings => !string.IsNullOrWhiteSpace(settings.Issuer),
+                    "JWT issuer is required.")
+                .Validate(
+                    settings => !string.IsNullOrWhiteSpace(settings.Audience),
+                    "JWT audience is required.")
+                .Validate(
+                    settings =>
+                        Encoding.UTF8.GetByteCount(settings.Key) >= 32,
+                    "JWT key must contain at least 32 bytes.")
+                .Validate(
+                    settings => settings.ExpirationMinutes > 0,
+                    "JWT expiration must be greater than zero.")
+                .ValidateOnStart();
+
+            services.AddScoped<ITokenService, JwtTokenService>();
+            services.AddScoped<IAuthenticationService,AuthenticationService>();
 
             return services;
         }
