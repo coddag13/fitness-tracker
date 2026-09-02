@@ -123,4 +123,92 @@ public sealed class WorkoutService : IWorkoutService
             workout.CreatedAt,
             workout.UpdatedAt));
     }
+
+    public async Task<WorkoutResult?> UpdateAsync(string userId,int workoutId,UpdateWorkoutRequest request,CancellationToken cancellationToken = default)
+    {
+        var workout = await _dbContext.Workouts
+                        .SingleOrDefaultAsync(
+                            workout =>
+                                workout.Id == workoutId &&
+                                workout.UserId == userId,
+                            cancellationToken);
+
+        if (workout is null)
+        {
+            return null;
+        }
+
+        var exerciseType = await _dbContext.ExerciseTypes
+                            .AsNoTracking()
+                            .SingleOrDefaultAsync(
+                                type =>
+                                    type.Id == request.ExerciseTypeId &&
+                                    type.IsActive,
+                                cancellationToken);
+
+        if (exerciseType is null)
+        {
+            return WorkoutResult.Failure(
+                new[]
+                {
+                "The selected exercise type does not exist or is inactive."
+                });
+        }
+
+        try
+        {
+            workout.Update(
+                request.ExerciseTypeId,
+                request.StartedAt,
+                request.DurationMinutes,
+                request.CaloriesBurned,
+                request.Difficulty,
+                request.Fatigue,
+                request.Notes);
+        }
+        catch (ArgumentException exception)
+        {
+            return WorkoutResult.Failure(
+                new[]
+                {
+                exception.Message
+                });
+        }
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        var response = new WorkoutResponse(
+            workout.Id,
+            workout.ExerciseTypeId,
+            exerciseType.Name,
+            workout.StartedAt,
+            workout.DurationMinutes,
+            workout.CaloriesBurned,
+            workout.Difficulty,
+            workout.Fatigue,
+            workout.Notes,
+            workout.CreatedAt,
+            workout.UpdatedAt);
+
+        return WorkoutResult.Success(response);
+    }
+
+    public async Task<bool> DeleteAsync(string userId,int workoutId,CancellationToken cancellationToken = default)
+    {
+        var workout = await _dbContext.Workouts
+            .SingleOrDefaultAsync(
+                workout =>workout.Id == workoutId && workout.UserId == userId,cancellationToken);
+
+        if (workout is null)
+        {
+            return false;
+        }
+
+        _dbContext.Workouts.Remove(workout);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
 }

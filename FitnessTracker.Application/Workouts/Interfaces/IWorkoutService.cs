@@ -14,5 +14,8 @@ namespace FitnessTracker.Application.Workouts.Interfaces
         Task<WorkoutResponse?> GetByIdAsync(string userId,int workoutId,CancellationToken cancellationToken = default);
 
         Task<WorkoutResult> CreateAsync(string userId,CreateWorkoutRequest request,CancellationToken cancellationToken = default);
+        Task<WorkoutResult?> UpdateAsync( string userId,int workoutId,UpdateWorkoutRequest request,CancellationToken cancellationToken = default);
+
+        Task<bool> DeleteAsync(string userId,int workoutId,CancellationToken cancellationToken = default);
     }
 }

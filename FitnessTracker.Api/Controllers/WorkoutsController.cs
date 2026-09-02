@@ -95,6 +95,70 @@ public sealed class WorkoutsController : ControllerBase
             result.Response);
     }
 
+    [HttpPut("{id:int:min(1)}")]
+    [ProducesResponseType(typeof(WorkoutResponse),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<WorkoutResponse>> Update(int id,UpdateWorkoutRequest request,CancellationToken cancellationToken)
+    {
+        var userId = GetAuthenticatedUserId();
+
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _workoutService.UpdateAsync(userId,id,request,cancellationToken);
+
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        if (!result.Succeeded || result.Response is null)
+        {
+            var problem = new ValidationProblemDetails(
+                new Dictionary<string, string[]>
+                {
+                    ["workout"] = result.Errors.ToArray()
+                })
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Workout update failed."
+            };
+
+            return BadRequest(problem);
+        }
+
+        return Ok(result.Response);
+    }
+
+
+    [HttpDelete("{id:int:min(1)}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        var userId = GetAuthenticatedUserId();
+
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var deleted = await _workoutService.DeleteAsync(userId,id,cancellationToken);
+
+        if (!deleted)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
     private string? GetAuthenticatedUserId()
     {
         return User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
