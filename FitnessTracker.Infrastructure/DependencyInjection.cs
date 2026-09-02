@@ -1,13 +1,15 @@
-﻿using FitnessTracker.Infrastructure.Identity;
+﻿using FitnessTracker.Application.Authentication.Interfaces;
+using FitnessTracker.Application.ExerciseTypes.Interfaces;
+using FitnessTracker.Application.Workouts.Interfaces;
+using FitnessTracker.Infrastructure.Authentication;
+using FitnessTracker.Infrastructure.Authentication.Services;
+using FitnessTracker.Infrastructure.ExerciseTypes.Services;
+using FitnessTracker.Infrastructure.Identity;
 using FitnessTracker.Infrastructure.Persistence;
+using FitnessTracker.Infrastructure.Workouts.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using FitnessTracker.Application.Authentication.Interfaces;
-using FitnessTracker.Infrastructure.Authentication;
-using FitnessTracker.Infrastructure.Authentication.Services;
-using FitnessTracker.Application.ExerciseTypes.Interfaces;
-using FitnessTracker.Infrastructure.ExerciseTypes.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +66,7 @@ namespace FitnessTracker.Infrastructure
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IAuthenticationService,AuthenticationService>();
             services.AddScoped<IExerciseTypeService,ExerciseTypeService>();
+            services.AddScoped<IWorkoutService, WorkoutService>();
 
             return services;
         }
