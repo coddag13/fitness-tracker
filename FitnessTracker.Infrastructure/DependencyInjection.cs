@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using FitnessTracker.Application.Authentication.Interfaces;
 using FitnessTracker.Infrastructure.Authentication;
 using FitnessTracker.Infrastructure.Authentication.Services;
+using FitnessTracker.Application.ExerciseTypes.Interfaces;
+using FitnessTracker.Infrastructure.ExerciseTypes.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +63,7 @@ namespace FitnessTracker.Infrastructure
 
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IAuthenticationService,AuthenticationService>();
+            services.AddScoped<IExerciseTypeService,ExerciseTypeService>();
 
             return services;
         }
