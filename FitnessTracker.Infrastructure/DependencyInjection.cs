@@ -7,6 +7,8 @@ using FitnessTracker.Infrastructure.ExerciseTypes.Services;
 using FitnessTracker.Infrastructure.Identity;
 using FitnessTracker.Infrastructure.Persistence;
 using FitnessTracker.Infrastructure.Workouts.Services;
+using FitnessTracker.Application.Progress.Interfaces;
+using FitnessTracker.Infrastructure.Progress.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,6 +69,7 @@ namespace FitnessTracker.Infrastructure
             services.AddScoped<IAuthenticationService,AuthenticationService>();
             services.AddScoped<IExerciseTypeService,ExerciseTypeService>();
             services.AddScoped<IWorkoutService, WorkoutService>();
+            services.AddScoped<IProgressService,ProgressService>();
 
             return services;
         }

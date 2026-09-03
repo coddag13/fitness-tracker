@@ -139,9 +139,7 @@ public sealed class WorkoutsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete(
-    int id,
-    CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(int id,CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
