@@ -25,12 +25,27 @@
 
     <app-navigation />
 
-    <div class="mt-auto hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-4 lg:block">
-      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-400">Mali koraci</p>
-      <p class="mt-2 text-sm leading-6 text-slate-400">
-        Svaki zabilježeni trening pretvara trud u vidljiv napredak.
-      </p>
-    </div>
+    @if (currentUser(); as user) {
+      <div class="mt-auto hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-4 lg:block">
+        <div class="flex min-w-0 items-center gap-3">
+          <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-orange-500/15 text-xs font-black text-orange-300">
+            {{ initials() }}
+          </span>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-bold text-slate-100">{{ fullName() }}</p>
+            <p class="truncate text-xs text-slate-500">{{ user.email }}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="logout()"
+          class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 px-3 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-300"
+        >
+          <span aria-hidden="true">↪</span>
+          Odjavi se
+        </button>
+      </div>
+    }
   </aside>
 
   <div class="relative pb-24 lg:pb-0 lg:pl-72">
@@ -45,7 +60,31 @@
         </span>
         <span class="font-bold tracking-tight text-white">FitnessTracker</span>
       </a>
-      <span class="size-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.7)]"></span>
+      <div class="relative">
+        <button
+          type="button"
+          (click)="toggleMobileMenu()"
+          class="grid size-9 place-items-center rounded-xl bg-orange-500/15 text-xs font-black text-orange-300"
+          [attr.aria-expanded]="mobileMenuOpen()"
+          aria-label="Otvori korisnički meni"
+        >
+          {{ initials() }}
+        </button>
+
+        @if (mobileMenuOpen() && currentUser(); as user) {
+          <div class="absolute top-12 right-0 w-64 rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-2xl shadow-black/40">
+            <p class="truncate text-sm font-bold text-white">{{ fullName() }}</p>
+            <p class="mt-1 truncate text-xs text-slate-500">{{ user.email }}</p>
+            <button
+              type="button"
+              (click)="logout()"
+              class="mt-4 w-full rounded-xl border border-slate-700 px-3 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-300"
+            >
+              Odjavi se
+            </button>
+          </div>
+        }
+      </div>
     </header>
 
     <main class="mx-auto min-h-dvh w-full max-w-7xl px-5 py-7 sm:px-8 lg:px-10 lg:py-10">

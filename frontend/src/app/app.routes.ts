@@ -1,8 +1,28 @@
 import { Routes } from '@angular/router';
+import { authGuard, guestGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
+    path: 'login',
+    title: 'Prijava | FitnessTracker',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/login-page/login-page').then(
+        (component) => component.LoginPage,
+      ),
+  },
+  {
+    path: 'register',
+    title: 'Registracija | FitnessTracker',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/register-page/register-page').then(
+        (component) => component.RegisterPage,
+      ),
+  },
+  {
     path: '',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./core/layout/app-shell/app-shell').then(
         (component) => component.AppShell,

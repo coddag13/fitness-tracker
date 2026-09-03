@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -7,4 +8,6 @@ import { RouterLink } from '@angular/router';
   templateUrl: './dashboard-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardPage {}
+export class DashboardPage {
+  protected readonly currentUser = inject(AuthService).currentUser;
+}
