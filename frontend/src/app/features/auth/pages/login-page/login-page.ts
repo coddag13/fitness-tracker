@@ -88,6 +88,6 @@ export class LoginPage {
       }
     }
 
-    return 'Prijava trenutno nije uspjela. Pokušaj ponovo.';
+    return 'Prijava trenutno nije uspela. Pokušaj ponovo.';
   }
 }

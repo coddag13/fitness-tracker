@@ -39,7 +39,7 @@ export class RatingScale {
     const value = this.value();
 
     if (!value) {
-      return 'Odaberi vrijednost';
+      return 'Odaberi vrednost';
     }
 
     if (value <= 2) {

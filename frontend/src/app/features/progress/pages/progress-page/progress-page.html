@@ -1,34 +1,135 @@
 <section aria-labelledby="progress-title">
-  <header class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+  <header class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
     <div>
       <p class="text-sm font-semibold text-orange-400">Analitika</p>
-      <h1 id="progress-title" class="mt-1 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Praćenje napretka
-      </h1>
+      <h1 id="progress-title" class="mt-1 text-3xl font-bold tracking-tight text-white sm:text-4xl">Praćenje napretka</h1>
       <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-        Uporedi težinu treninga i umor kroz svaku nedjelju odabranog mjeseca.
+        Prati trajanje, intenzitet i oporavak kroz svaku nedelju odabranog meseca.
       </p>
     </div>
-    <span class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-300">
-      Pregled po nedjeljama
-    </span>
+
+    <app-month-selector
+      class="w-full sm:w-72"
+      [value]="selectedMonth()"
+      [max]="maxMonth"
+      (valueChange)="changeMonth($event)"
+    />
   </header>
 
-  <div class="mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 sm:p-8">
-    <div class="flex items-center justify-between">
+  @if (loading()) {
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Učitavanje napretka">
+      @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+        <div class="h-40 animate-pulse rounded-2xl bg-slate-900/70"></div>
+      }
+    </div>
+    <div class="mt-6 h-96 animate-pulse rounded-2xl bg-slate-900/70"></div>
+  } @else if (loadError(); as message) {
+    <div class="mt-8 rounded-2xl border border-red-500/20 bg-red-500/10 px-6 py-12 text-center">
+      <p class="font-semibold text-red-200">{{ message }}</p>
+      <button type="button" (click)="retry()" class="mt-5 rounded-xl border border-red-400/30 px-5 py-2.5 text-sm font-bold text-red-200 transition hover:bg-red-500/10">
+        Pokušaj ponovo
+      </button>
+    </div>
+  } @else if (progress(); as monthlyProgress) {
+    <div class="mt-8 flex items-center justify-between gap-4">
       <div>
-        <h2 class="text-lg font-bold text-white">Težina i umor</h2>
-        <p class="mt-1 text-sm text-slate-500">Sedmični trend na skali od 1 do 10</p>
+        <h2 class="text-xl font-bold capitalize text-white">{{ monthLabel() }}</h2>
+        <p class="mt-1 text-sm text-slate-500">Izaberi nedelju za detaljan pregled.</p>
       </div>
-      <span class="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-400">Mjesečni pregled</span>
+      <span class="rounded-full border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-300">
+        {{ monthlyProgress.weeks.length }} nedelja
+      </span>
     </div>
-    <div class="mt-8 grid h-64 place-items-center rounded-xl border border-dashed border-slate-700 bg-slate-950/40 text-sm text-slate-500">
-      Zabilježi treninge i ovdje ćeš vidjeti promjene kroz vrijeme.
-    </div>
-  </div>
 
-  <div class="mt-6 rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-10 text-center">
-    <p class="font-semibold text-slate-200">Nema sedmičnih rezultata za prikaz</p>
-    <p class="mt-2 text-sm text-slate-500">Rezultati će se pojaviti nakon što zabilježiš trening.</p>
-  </div>
+    <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (week of monthlyProgress.weeks; track week.weekStart; let index = $index) {
+        <app-weekly-progress-card
+          [week]="week"
+          [weekNumber]="index + 1"
+          [selected]="selectedWeekIndex() === index"
+          (selectedChange)="selectWeek(index)"
+        />
+      }
+    </div>
+
+    @if (selectedWeek(); as week) {
+      <section class="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 sm:p-8" aria-labelledby="selected-week-title">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-xs font-black uppercase tracking-widest text-orange-400">Odabrana nedelja</p>
+            <h2 id="selected-week-title" class="mt-1 text-xl font-bold text-white">
+              {{ formatDateRange(week.weekStart, week.weekEnd) }}
+            </h2>
+          </div>
+          @if (week.workoutCount === 0) {
+            <span class="text-sm text-slate-500">Nema treninga u ovoj nedelji</span>
+          }
+        </div>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <article class="rounded-xl border border-slate-800 bg-slate-950/50 p-5">
+            <p class="text-sm text-slate-400">Broj treninga</p>
+            <p class="mt-2 text-3xl font-black text-orange-400">{{ week.workoutCount }}</p>
+          </article>
+          <article class="rounded-xl border border-slate-800 bg-slate-950/50 p-5">
+            <p class="text-sm text-slate-400">Ukupno trajanje</p>
+            <p class="mt-2 text-3xl font-black text-sky-400">{{ week.totalDurationMinutes }} <span class="text-base">min</span></p>
+          </article>
+          <article class="rounded-xl border border-slate-800 bg-slate-950/50 p-5">
+            <p class="text-sm text-slate-400">Prosečna težina</p>
+            <p class="mt-2 text-3xl font-black text-amber-400">{{ week.workoutCount ? week.averageDifficulty.toFixed(1) + '/10' : '—' }}</p>
+          </article>
+          <article class="rounded-xl border border-slate-800 bg-slate-950/50 p-5">
+            <p class="text-sm text-slate-400">Prosečan umor</p>
+            <p class="mt-2 text-3xl font-black text-teal-400">{{ week.workoutCount ? week.averageFatigue.toFixed(1) + '/10' : '—' }}</p>
+          </article>
+        </div>
+
+        <div class="mt-8 border-t border-slate-800 pt-7">
+          <h3 class="text-lg font-bold text-white">Tok treninga tokom nedelje</h3>
+          <p class="mt-1 text-sm text-slate-500">Poređenje težine i umora od treninga do treninga.</p>
+
+          @if (selectedWeekWorkouts().length > 0) {
+            <div class="mt-5">
+              <app-workout-trend-chart [workouts]="selectedWeekWorkouts()" />
+            </div>
+          } @else {
+            <div class="mt-5 rounded-xl border border-dashed border-slate-700 bg-slate-950/40 px-5 py-8 text-center text-sm text-slate-500">
+              U ovoj nedelji nema treninga za prikaz na grafikonu.
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-8" aria-labelledby="trend-title">
+      <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 id="trend-title" class="text-xl font-bold text-white">Mesečni trend težine i umora</h2>
+          <p class="mt-1 text-sm text-slate-500">Prosečne vrednosti po nedeljama na skali od 1 do 10</p>
+        </div>
+        <span class="mt-2 w-fit rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-400 sm:mt-0">Mesečni pregled</span>
+      </div>
+
+      @if (hasWorkouts()) {
+        <div class="mt-6"><app-progress-chart [weeks]="monthlyProgress.weeks" /></div>
+        @if (hasWeeksWithoutWorkouts()) {
+          <p class="mt-4 text-center text-xs text-slate-500">
+            Podaci za preostale nedelje biće prikazani nakon unosa treninga.
+          </p>
+        }
+      } @else {
+        <div class="mt-8 grid place-items-center rounded-xl border border-dashed border-slate-700 bg-slate-950/40 px-6 py-12 text-center">
+          <div class="grid size-14 place-items-center rounded-2xl bg-orange-500/10 text-orange-400">
+            <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 19V9m5 10V5m5 14v-7m5 7V3" />
+            </svg>
+          </div>
+          <p class="mt-4 font-semibold text-slate-200">Nema treninga u ovom mesecu</p>
+          <p class="mt-1 text-sm text-slate-500">Dodaj trening i ovde ćeš videti kako napreduješ.</p>
+          <a routerLink="/workouts" [queryParams]="{ create: 'true' }" class="mt-5 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-orange-400">Dodaj trening</a>
+        </div>
+      }
+    </section>
+  }
 </section>

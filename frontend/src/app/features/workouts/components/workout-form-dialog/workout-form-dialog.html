@@ -8,10 +8,10 @@
     <header class="flex items-start justify-between gap-5 border-b border-slate-800 px-5 py-5 sm:px-7">
       <div>
         <p class="text-xs font-bold uppercase tracking-[0.18em] text-orange-400">
-          {{ workout() ? 'Izmjena aktivnosti' : 'Nova aktivnost' }}
+          {{ workout() ? 'Izmena aktivnosti' : 'Nova aktivnost' }}
         </p>
         <h2 id="workout-form-title" class="mt-1 text-2xl font-black text-white">
-          {{ workout() ? 'Izmijeni trening' : 'Dodaj trening' }}
+          {{ workout() ? 'Izmeni trening' : 'Dodaj trening' }}
         </h2>
       </div>
       <button
@@ -39,17 +39,14 @@
 
       <div class="grid gap-5 sm:grid-cols-3">
         <div class="sm:col-span-1">
-          <label for="workout-started-at" class="mb-2 block text-sm font-semibold text-slate-200">Datum i vrijeme</label>
-          <input
-            id="workout-started-at"
-            type="datetime-local"
-            formControlName="startedAt"
+          <app-localized-date-time-picker
+            [value]="form.controls.startedAt.value"
             [max]="maximumStartedAt"
-            class="w-full rounded-xl border border-slate-700 bg-slate-950/55 px-3 py-3 text-sm text-slate-100 transition hover:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
+            (valueChange)="selectStartedAt($event)"
           />
           <div class="mt-1 min-h-5 text-xs text-red-400">
             @if (form.controls.startedAt.touched && form.controls.startedAt.hasError('required')) {
-              Unesi datum i vrijeme treninga.
+              Unesi datum i vreme treninga.
             } @else if (form.controls.startedAt.touched && form.controls.startedAt.hasError('futureDate')) {
               Trening ne može biti u budućnosti.
             }
@@ -106,12 +103,12 @@
         (valueChange)="selectRating('fatigue', $event)"
       />
       @if (form.controls.fatigue.touched && form.controls.fatigue.invalid) {
-        <p class="-mt-5 text-xs text-red-400">Odaberi osjećaj umora.</p>
+        <p class="-mt-5 text-xs text-red-400">Odaberi osećaj umora.</p>
       }
 
       <div>
         <div class="mb-2 flex items-center justify-between gap-4">
-          <label for="workout-notes" class="text-sm font-semibold text-slate-200">Bilješka <span class="font-normal text-slate-500">(nije obavezno)</span></label>
+          <label for="workout-notes" class="text-sm font-semibold text-slate-200">Beleška <span class="font-normal text-slate-500">(nije obavezno)</span></label>
           <span class="text-xs text-slate-600">{{ form.controls.notes.value.length }}/1000</span>
         </div>
         <textarea
@@ -148,7 +145,7 @@
             <span class="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true"></span>
             Čuvanje...
           } @else {
-            {{ workout() ? 'Sačuvaj izmjene' : 'Dodaj trening' }}
+            {{ workout() ? 'Sačuvaj izmene' : 'Dodaj trening' }}
           }
         </button>
       </footer>

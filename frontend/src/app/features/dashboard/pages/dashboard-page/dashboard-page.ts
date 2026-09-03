@@ -42,25 +42,25 @@ export class DashboardPage implements OnInit {
       {
         label: 'Broj treninga',
         value: count.toString(),
-        detail: 'ove nedjelje',
+        detail: 'ove nedelje',
         color: 'text-orange-400',
       },
       {
         label: 'Ukupno trajanje',
         value: `${totalDuration} min`,
-        detail: 'ove nedjelje',
+        detail: 'ove nedelje',
         color: 'text-sky-400',
       },
       {
-        label: 'Prosječna težina',
+        label: 'Prosečna težina',
         value: averageDifficulty === null ? '—' : `${averageDifficulty.toFixed(1)}/10`,
-        detail: averageDifficulty === null ? 'Nema unosa ove nedjelje' : 'ove nedjelje',
+        detail: averageDifficulty === null ? 'Nema unosa ove nedelje' : 'ove nedelje',
         color: 'text-amber-400',
       },
       {
-        label: 'Prosječan umor',
+        label: 'Prosečan umor',
         value: averageFatigue === null ? '—' : `${averageFatigue.toFixed(1)}/10`,
-        detail: averageFatigue === null ? 'Nema unosa ove nedjelje' : 'ove nedjelje',
+        detail: averageFatigue === null ? 'Nema unosa ove nedelje' : 'ove nedelje',
         color: 'text-emerald-400',
       },
     ];

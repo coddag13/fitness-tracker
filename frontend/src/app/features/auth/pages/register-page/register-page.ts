@@ -110,7 +110,7 @@ export class RegisterPage {
 
   private toFriendlyErrors(error: unknown): string[] {
     if (!(error instanceof HttpErrorResponse)) {
-      return ['Registracija trenutno nije uspjela. Pokušaj ponovo.'];
+      return ['Registracija trenutno nije uspela. Pokušaj ponovo.'];
     }
 
     if (error.status === 0) {
@@ -125,7 +125,7 @@ export class RegisterPage {
         : [];
 
     if (serverErrors.length === 0) {
-      return ['Registracija nije uspjela. Provjeri unesene podatke.'];
+      return ['Registracija nije uspela. Proveri unesene podatke.'];
     }
 
     return serverErrors.map((message) => this.translateServerError(message));
@@ -154,6 +154,6 @@ export class RegisterPage {
       return 'Lozinka mora imati najmanje 8 znakova.';
     }
 
-    return 'Registracija nije uspjela. Provjeri unesene podatke.';
+    return 'Registracija nije uspela. Proveri unesene podatke.';
   }
 }

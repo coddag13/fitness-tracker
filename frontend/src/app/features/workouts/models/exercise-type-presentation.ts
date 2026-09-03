@@ -24,7 +24,7 @@ const presentations: Record<string, ExerciseTypePresentation> = {
   flexibility: {
     label: 'Fleksibilnost',
     imageUrl: '/images/exercise-types/flexibility.jpg',
-    imageAlt: 'Grupa izvodi vježbe fleksibilnosti',
+    imageAlt: 'Grupa izvodi vežbe fleksibilnosti',
     accentClass: 'from-emerald-500/45',
     badgeClass: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/20',
   },

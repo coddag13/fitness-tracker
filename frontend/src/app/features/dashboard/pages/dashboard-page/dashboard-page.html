@@ -6,7 +6,7 @@
         Zdravo, {{ currentUser()?.firstName }}!
       </h1>
       <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-        Prati dosljednost, intenzitet i oporavak iz nedjelje u nedjelju.
+        Prati doslednost, intenzitet i oporavak iz nedelje u nedelju.
       </p>
     </div>
     <a
@@ -20,8 +20,13 @@
   </header>
 
   <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    @for (stat of weeklyStats(); track stat.label) {
-      <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-xl shadow-black/10">
+    @for (stat of weeklyStats(); track stat.label; let first = $first) {
+      <article
+        class="rounded-2xl border bg-slate-900/70 p-5 shadow-xl shadow-black/10"
+        [class.border-orange-500/35]="first"
+        [class.bg-orange-500/5]="first"
+        [class.border-slate-800]="!first"
+      >
         <p class="text-sm font-medium text-slate-400">{{ stat.label }}</p>
         @if (loading()) {
           <div class="mt-4 h-9 w-24 animate-pulse rounded-lg bg-slate-800"></div>
@@ -36,8 +41,8 @@
   <section class="mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 sm:p-8" aria-labelledby="recent-title">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <h2 id="recent-title" class="text-xl font-bold text-white">Posljednji treninzi</h2>
-        <p class="mt-1 text-sm text-slate-500">Tvoje najnovije zabilježene aktivnosti.</p>
+        <h2 id="recent-title" class="text-xl font-bold text-white">Poslednji treninzi</h2>
+        <p class="mt-1 text-sm text-slate-500">Tvoje najnovije zabeležene aktivnosti.</p>
       </div>
       <a routerLink="/workouts" class="text-sm font-semibold text-orange-400 transition hover:text-orange-300">
         Pogledaj sve
@@ -61,10 +66,12 @@
           <a routerLink="/workouts" class="group relative min-h-40 overflow-hidden rounded-xl border border-slate-700 bg-slate-950/60 p-5 transition hover:border-orange-500/40">
             <img [src]="exerciseTypeImage(workout.exerciseTypeName)" alt="" class="absolute inset-0 size-full object-cover opacity-25 grayscale transition duration-300 group-hover:scale-105 group-hover:opacity-35" />
             <span class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent"></span>
-            <span class="relative flex h-full flex-col justify-end">
+            <span class="relative flex h-full flex-col justify-end pt-8">
+              <time class="absolute top-0 right-0 rounded-lg bg-slate-950/70 px-2.5 py-1 text-[11px] font-semibold text-slate-300 backdrop-blur-sm" [attr.datetime]="workout.startedAt">
+                {{ workout.startedAt | date: 'dd.MM.yyyy. · HH:mm' }}
+              </time>
               <span class="text-xs font-black text-orange-300">{{ exerciseTypeLabel(workout.exerciseTypeName) }}</span>
               <span class="mt-2 font-bold text-white">{{ workout.durationMinutes }} min · {{ workout.caloriesBurned }} kcal</span>
-              <time class="mt-1 text-xs text-slate-400" [attr.datetime]="workout.startedAt">{{ workout.startedAt | date: 'dd.MM.yyyy. · HH:mm' }}</time>
             </span>
           </a>
         }
@@ -76,7 +83,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 10v4m3-6v8m10-8v8m3-6v4M7 12h10M2.5 9.5h3v5h-3zm16 0h3v5h-3z" />
           </svg>
         </div>
-        <p class="mt-4 font-semibold text-slate-200">Još nema zabilježenih treninga</p>
+        <p class="mt-4 font-semibold text-slate-200">Još nema zabeleženih treninga</p>
         <p class="mt-1 text-sm text-slate-500">Dodaj prvi trening i počni pratiti svoj napredak.</p>
         <a routerLink="/workouts" [queryParams]="{ create: 'true' }" class="mt-5 inline-flex items-center justify-center rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-orange-400">
           Dodaj prvi trening

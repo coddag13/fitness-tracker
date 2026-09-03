@@ -5,6 +5,7 @@ import { ExerciseType } from '../../models/exercise-type.model';
 import { Workout } from '../../models/workout.model';
 import { WorkoutRequest } from '../../models/workout-request.model';
 import { ExerciseTypeSelector } from '../exercise-type-selector/exercise-type-selector';
+import { LocalizedDateTimePicker } from '../localized-date-time-picker/localized-date-time-picker';
 import { RatingScale } from '../rating-scale/rating-scale';
 
 const notInFutureValidator: ValidatorFn = (
@@ -25,7 +26,7 @@ const notInFutureValidator: ValidatorFn = (
 
 @Component({
   selector: 'app-workout-form-dialog',
-  imports: [ExerciseTypeSelector, RatingScale, ReactiveFormsModule],
+  imports: [ExerciseTypeSelector, LocalizedDateTimePicker, RatingScale, ReactiveFormsModule],
   templateUrl: './workout-form-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -104,6 +105,11 @@ export class WorkoutFormDialog {
   protected selectRating(field: 'difficulty' | 'fatigue', value: number): void {
     this.form.controls[field].setValue(value);
     this.form.controls[field].markAsTouched();
+  }
+
+  protected selectStartedAt(value: string): void {
+    this.form.controls.startedAt.setValue(value);
+    this.form.controls.startedAt.markAsTouched();
   }
 
   protected submit(): void {

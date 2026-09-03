@@ -1,7 +1,7 @@
 <app-auth-shell
   eyebrow="Novi početak"
   title="Kreiraj svoj nalog"
-  subtitle="Za nekoliko trenutaka možeš početi bilježiti treninge i pratiti svoj napredak."
+  subtitle="Za nekoliko trenutaka možeš početi beležiti treninge i pratiti svoj napredak."
 >
   @if (errorMessages().length > 0) {
     <div class="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
@@ -65,7 +65,7 @@
         autocomplete="email"
         inputmode="email"
         maxlength="256"
-        placeholder="ime@primjer.com"
+        placeholder="ime@primer.com"
         (blur)="normalizeText('email')"
         [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched"
         aria-describedby="register-email-error"

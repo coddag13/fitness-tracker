@@ -1,0 +1,66 @@
+<div class="relative">
+  <label id="workout-date-label" class="mb-2 block text-sm font-semibold text-slate-200">Datum i vreme</label>
+  <button
+    type="button"
+    (click)="toggle()"
+    class="flex h-[50px] w-full items-center justify-between gap-2 rounded-xl border border-slate-700 bg-slate-950/55 px-3 text-left text-sm text-slate-100 transition hover:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
+    aria-labelledby="workout-date-label"
+    [attr.aria-expanded]="open()"
+  >
+    <span class="min-w-0 truncate whitespace-nowrap">{{ displayValue() }}</span>
+    <svg class="size-5 shrink-0 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v3m10-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
+    </svg>
+  </button>
+
+  @if (open()) {
+    <div class="absolute left-0 z-30 mt-2 w-[min(22rem,calc(100vw-3rem))] rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-2xl shadow-black/60">
+      <div class="flex items-center justify-between gap-3">
+        <button type="button" (click)="previousMonth()" class="grid size-9 place-items-center rounded-lg border border-slate-700 text-slate-300 transition hover:bg-slate-800" aria-label="Prethodni mesec">‹</button>
+        <p class="font-bold text-white">{{ months[viewMonth() - 1] }} {{ viewYear() }}.</p>
+        <button type="button" (click)="nextMonth()" [disabled]="!canGoNext()" class="grid size-9 place-items-center rounded-lg border border-slate-700 text-slate-300 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-30" aria-label="Sledeći mesec">›</button>
+      </div>
+
+      <div class="mt-4 grid grid-cols-7 gap-1 text-center">
+        @for (weekday of weekdays; track weekday) {
+          <span class="py-1 text-[11px] font-bold uppercase text-slate-500">{{ weekday }}</span>
+        }
+        @for (day of calendarDays(); track $index) {
+          @if (day === null) {
+            <span></span>
+          } @else {
+            <button
+              type="button"
+              (click)="selectDay(day)"
+              [disabled]="dayDisabled(day)"
+              class="aspect-square rounded-lg text-sm font-semibold transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:text-slate-700"
+              [class.bg-orange-500]="daySelected(day)"
+              [class.text-white]="daySelected(day)"
+              [class.text-slate-300]="!daySelected(day) && !dayDisabled(day)"
+              [class.ring-1]="dayIsToday(day) && !daySelected(day)"
+              [class.ring-orange-400]="dayIsToday(day) && !daySelected(day)"
+              [attr.aria-label]="day + '. ' + months[viewMonth() - 1].toLowerCase()"
+              [attr.aria-pressed]="daySelected(day)"
+            >
+              {{ day }}
+            </button>
+          }
+        }
+      </div>
+
+      <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-end gap-2 border-t border-slate-800 pt-4">
+        <label>
+          <span class="mb-1 block text-xs font-semibold text-slate-400">Sat</span>
+          <input type="number" min="0" max="23" [value]="selectedHour()" (change)="changeHour($event)" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-center text-white focus:border-orange-500" />
+        </label>
+        <span class="pb-2 font-black text-slate-500">:</span>
+        <label>
+          <span class="mb-1 block text-xs font-semibold text-slate-400">Minut</span>
+          <input type="number" min="0" max="59" [value]="selectedMinute()" (change)="changeMinute($event)" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-center text-white focus:border-orange-500" />
+        </label>
+      </div>
+
+      <button type="button" (click)="toggle()" class="mt-4 w-full rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-orange-400">Potvrdi</button>
+    </div>
+  }
+</div>

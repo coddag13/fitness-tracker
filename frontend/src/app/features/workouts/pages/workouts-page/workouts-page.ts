@@ -29,12 +29,24 @@ export class WorkoutsPage implements OnInit {
   protected readonly workouts = signal<Workout[]>([]);
   protected readonly exerciseTypes = signal<ExerciseType[]>([]);
   protected readonly selectedExerciseTypeId = signal<number | null>(null);
+  protected readonly currentPage = signal(1);
+  protected readonly pageSize = 9;
   protected readonly filteredWorkouts = computed(() => {
     const selectedId = this.selectedExerciseTypeId();
     return selectedId === null
       ? this.workouts()
       : this.workouts().filter((workout) => workout.exerciseTypeId === selectedId);
   });
+  protected readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.filteredWorkouts().length / this.pageSize)),
+  );
+  protected readonly paginatedWorkouts = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return this.filteredWorkouts().slice(start, start + this.pageSize);
+  });
+  protected readonly pageNumbers = computed(() =>
+    Array.from({ length: this.totalPages() }, (_, index) => index + 1),
+  );
   protected readonly loading = signal(true);
   protected readonly loadError = signal<string | null>(null);
   protected readonly formOpen = signal(false);
@@ -56,6 +68,16 @@ export class WorkoutsPage implements OnInit {
 
   protected filterByExerciseType(id: number | null): void {
     this.selectedExerciseTypeId.set(id);
+    this.currentPage.set(1);
+  }
+
+  protected goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages() || page === this.currentPage()) {
+      return;
+    }
+
+    this.currentPage.set(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   protected exerciseTypeLabel(name: string): string {
@@ -113,9 +135,10 @@ export class WorkoutsPage implements OnInit {
                 : [savedWorkout, ...workouts],
             ),
           );
+          this.currentPage.set(1);
           this.formOpen.set(false);
           this.editingWorkout.set(null);
-          this.showNotice(workout ? 'Trening je uspješno izmijenjen.' : 'Trening je uspješno dodat.');
+          this.showNotice(workout ? 'Trening je uspešno izmenjen.' : 'Trening je uspešno dodat.');
         },
         error: (error: unknown) => this.formError.set(this.friendlySaveError(error)),
       });
@@ -151,6 +174,7 @@ export class WorkoutsPage implements OnInit {
           this.workouts.update((workouts) =>
             workouts.filter((item) => item.id !== workout.id),
           );
+          this.currentPage.set(Math.min(this.currentPage(), this.totalPages()));
           this.workoutToDelete.set(null);
           this.showNotice('Trening je obrisan.');
         },
@@ -216,7 +240,7 @@ export class WorkoutsPage implements OnInit {
       const message = messages.join(' ').toLowerCase();
 
       if (message.includes('future')) {
-        return 'Datum i vrijeme treninga ne mogu biti u budućnosti.';
+        return 'Datum i vreme treninga ne mogu biti u budućnosti.';
       }
 
       if (message.includes('exercise type')) {
@@ -232,10 +256,10 @@ export class WorkoutsPage implements OnInit {
       }
 
       if (message.includes('notes')) {
-        return 'Bilješka može imati najviše 1000 znakova.';
+        return 'Beleška može imati najviše 1000 znakova.';
       }
 
-      return 'Provjeri unesene podatke i pokušaj ponovo.';
+      return 'Proveri unesene podatke i pokušaj ponovo.';
     }
 
     if (error instanceof HttpErrorResponse && error.status === 404) {
@@ -247,7 +271,7 @@ export class WorkoutsPage implements OnInit {
 
   private friendlyDeleteError(error: unknown): string {
     if (error instanceof HttpErrorResponse && error.status === 404) {
-      return 'Trening je već uklonjen. Osvježi listu i pokušaj ponovo.';
+      return 'Trening je već uklonjen. Osveži listu i pokušaj ponovo.';
     }
 
     if (error instanceof HttpErrorResponse && error.status === 0) {
