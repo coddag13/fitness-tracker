@@ -63,6 +63,16 @@ namespace FitnessTracker.Domain.Entities
                 throw new ArgumentOutOfRangeException(nameof(exerciseTypeId), "Exercise type identifier must be greater than zero.");
             }
 
+            if (startedAt == default)
+            {
+                throw new ArgumentException("Workout date and time are required.",nameof(startedAt));
+            }
+
+            if (startedAt > DateTimeOffset.UtcNow)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startedAt),"Workout date and time cannot be in the future.");
+            }
+
             if (durationMinutes <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(durationMinutes),"Workout duration must be greater than zero.");

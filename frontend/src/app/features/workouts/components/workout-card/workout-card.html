@@ -1,0 +1,65 @@
+<article class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/75 shadow-xl shadow-black/10 transition hover:-translate-y-0.5 hover:border-slate-700">
+  <div class="relative h-40 overflow-hidden">
+    <img
+      [src]="presentation().imageUrl"
+      [alt]="presentation().imageAlt"
+      loading="lazy"
+      class="size-full object-cover opacity-70 grayscale-[15%] transition duration-500 group-hover:scale-105 group-hover:opacity-85"
+    />
+    <div [class]="'absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/25 to-transparent ' + presentation().accentClass"></div>
+    <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5">
+      <span [class]="'rounded-full px-3 py-1 text-xs font-black ring-1 ring-inset backdrop-blur-md ' + presentation().badgeClass">
+        {{ presentation().label }}
+      </span>
+      <time class="text-xs font-semibold text-slate-200" [attr.datetime]="workout().startedAt">
+        {{ workout().startedAt | date: 'dd.MM.yyyy. · HH:mm' }}
+      </time>
+    </div>
+  </div>
+
+  <div class="p-5">
+    <div class="grid grid-cols-2 gap-3">
+      <div class="rounded-xl bg-slate-950/55 p-3">
+        <p class="text-xs text-slate-500">Trajanje</p>
+        <p class="mt-1 text-lg font-black text-slate-100">{{ workout().durationMinutes }} min</p>
+      </div>
+      <div class="rounded-xl bg-slate-950/55 p-3">
+        <p class="text-xs text-slate-500">Potrošene kalorije</p>
+        <p class="mt-1 text-lg font-black text-slate-100">{{ workout().caloriesBurned }} kcal</p>
+      </div>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-2 text-xs font-bold">
+      <span [class]="'rounded-lg px-3 py-2 ' + ratingClass(workout().difficulty)">
+        Težina {{ workout().difficulty }}/10
+      </span>
+      <span [class]="'rounded-lg px-3 py-2 ' + ratingClass(workout().fatigue)">
+        Umor {{ workout().fatigue }}/10
+      </span>
+    </div>
+
+    @if (workout().notes) {
+      <p class="mt-4 line-clamp-2 min-h-10 text-sm leading-5 text-slate-400">{{ workout().notes }}</p>
+    } @else {
+      <p class="mt-4 min-h-10 text-sm italic leading-5 text-slate-600">Bez dodatne bilješke</p>
+    }
+
+    <div class="mt-5 flex gap-3 border-t border-slate-800 pt-4">
+      <button
+        type="button"
+        (click)="editRequested.emit(workout())"
+        class="flex-1 rounded-xl border border-orange-500/30 bg-orange-500/5 px-4 py-2.5 text-sm font-bold text-orange-300 transition hover:border-orange-400/60 hover:bg-orange-500/15"
+      >
+        Izmijeni
+      </button>
+      <button
+        type="button"
+        (click)="deleteRequested.emit(workout())"
+        class="rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-red-500/10 hover:text-red-300"
+        [attr.aria-label]="'Obriši ' + presentation().label + ' trening'"
+      >
+        <span aria-hidden="true">×</span> Obriši
+      </button>
+    </div>
+  </div>
+</article>

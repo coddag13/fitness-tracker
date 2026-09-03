@@ -1,0 +1,29 @@
+<fieldset>
+  <div class="mb-3 flex items-center justify-between gap-4">
+    <legend class="text-sm font-semibold text-slate-200">{{ label() }}</legend>
+    <span class="text-xs font-medium text-slate-500">
+      {{ value() ? value() + ' / 10 · ' + description() : description() }}
+    </span>
+  </div>
+
+  <div class="grid grid-cols-5 gap-2 sm:grid-cols-10" role="radiogroup" [attr.aria-label]="label()">
+    @for (option of values; track option) {
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="value() === option"
+        [attr.aria-label]="label() + ': ' + option + ' od 10'"
+        (click)="select(option)"
+        [class]="
+          'relative grid aspect-square place-items-center rounded-lg border text-sm font-black transition ' +
+          toneClass(option) +
+          (value() === option
+            ? ' scale-105 ring-2 ring-white ring-offset-2 ring-offset-slate-900'
+            : ' opacity-75 hover:opacity-100')
+        "
+      >
+        {{ option }}
+      </button>
+    }
+  </div>
+</fieldset>

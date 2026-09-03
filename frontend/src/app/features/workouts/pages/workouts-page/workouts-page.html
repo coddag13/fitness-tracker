@@ -1,35 +1,138 @@
 <section aria-labelledby="workouts-title">
-  <header>
-    <p class="text-sm font-semibold text-orange-400">Istorija aktivnosti</p>
-    <h1 id="workouts-title" class="mt-1 text-3xl font-bold tracking-tight text-white sm:text-4xl">Treninzi</h1>
-    <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-      Svi treninzi na jednom mjestu, pregledno organizovani kroz kartice.
-    </p>
-  </header>
-
-  <div class="mt-8 grid gap-4 md:grid-cols-3">
-    @for (type of [
-      { name: 'Kardio', description: 'Trčanje i izdržljivost', accent: 'from-orange-500/25' },
-      { name: 'Trening snage', description: 'Snaga i razvoj mišića', accent: 'from-rose-500/25' },
-      { name: 'Fleksibilnost', description: 'Mobilnost i oporavak', accent: 'from-emerald-500/25' },
-    ]; track type.name) {
-      <article class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
-        <div [class]="'absolute inset-0 bg-gradient-to-br ' + type.accent + ' to-transparent'" aria-hidden="true"></div>
-        <div class="relative">
-          <p class="font-bold text-white">{{ type.name }}</p>
-          <p class="mt-1 text-sm text-slate-400">{{ type.description }}</p>
-        </div>
-      </article>
-    }
-  </div>
-
-  <div class="mt-8 grid min-h-72 place-items-center rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
+  <header class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <div class="mx-auto grid size-14 place-items-center rounded-2xl bg-slate-800 text-2xl text-slate-400">◇</div>
-      <h2 class="mt-4 text-lg font-bold text-slate-200">Još nema zabilježenih treninga</h2>
-      <p class="mt-2 max-w-md text-sm leading-6 text-slate-500">
-        Kada dodaš prvi trening, ovdje ćeš pronaći sve njegove detalje.
+      <p class="text-sm font-semibold text-orange-400">Istorija aktivnosti</p>
+      <h1 id="workouts-title" class="mt-1 text-3xl font-bold tracking-tight text-white sm:text-4xl">Treninzi</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+        Zabilježi svaki trening i sačuvaj pregled svog napretka.
       </p>
     </div>
-  </div>
+    <button
+      type="button"
+      (click)="openCreateForm()"
+      [disabled]="loading() || exerciseTypes().length === 0"
+      class="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-orange-950/30 transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      <span class="text-xl leading-none" aria-hidden="true">+</span>
+      Dodaj trening
+    </button>
+  </header>
+
+  @if (notice(); as message) {
+    <div class="fixed top-5 right-5 z-[80] rounded-xl border border-emerald-500/20 bg-emerald-950/95 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-2xl" role="status">
+      {{ message }}
+    </div>
+  }
+
+  @if (errorNotice(); as message) {
+    <div class="fixed top-5 right-5 z-[80] max-w-sm rounded-xl border border-red-500/20 bg-red-950/95 px-5 py-3 text-sm font-semibold text-red-200 shadow-2xl" role="alert">
+      {{ message }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3" aria-label="Učitavanje treninga">
+      @for (placeholder of [1, 2, 3, 4, 5, 6]; track placeholder) {
+        <div class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
+          <div class="h-44 animate-pulse bg-slate-800"></div>
+          <div class="space-y-4 p-5">
+            <div class="h-16 animate-pulse rounded-xl bg-slate-800/70"></div>
+            <div class="h-5 w-2/3 animate-pulse rounded bg-slate-800/70"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (loadError(); as message) {
+    <div class="mt-8 rounded-2xl border border-red-500/20 bg-red-500/10 px-6 py-10 text-center">
+      <p class="font-bold text-red-200">{{ message }}</p>
+      <button type="button" (click)="retry()" class="mt-5 rounded-xl bg-red-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-400">
+        Pokušaj ponovo
+      </button>
+    </div>
+  } @else if (workouts().length === 0) {
+    <div class="mt-8 grid min-h-80 place-items-center rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
+      <div>
+        <div class="mx-auto grid size-14 place-items-center rounded-2xl bg-orange-500/10 text-2xl text-orange-400">+</div>
+        <h2 class="mt-4 text-lg font-bold text-slate-200">Još nema zabilježenih treninga</h2>
+        <p class="mt-2 max-w-md text-sm leading-6 text-slate-500">Dodaj prvi trening i počni pratiti svoj napredak.</p>
+        <button type="button" (click)="openCreateForm()" class="mt-6 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-400">
+          Dodaj prvi trening
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="mt-8 rounded-2xl border border-slate-800 bg-slate-900/55 p-3">
+      <div class="flex flex-wrap gap-2" aria-label="Filtriraj treninge po vrsti">
+        <button
+          type="button"
+          (click)="filterByExerciseType(null)"
+          [attr.aria-pressed]="selectedExerciseTypeId() === null"
+          [class]="selectedExerciseTypeId() === null
+            ? 'rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white transition'
+            : 'rounded-xl px-4 py-2 text-sm font-bold text-slate-400 transition hover:bg-slate-800 hover:text-slate-200'"
+        >
+          Svi treninzi
+        </button>
+        @for (type of exerciseTypes(); track type.id) {
+          <button
+            type="button"
+            (click)="filterByExerciseType(type.id)"
+            [attr.aria-pressed]="selectedExerciseTypeId() === type.id"
+            [class]="selectedExerciseTypeId() === type.id
+              ? 'rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white transition'
+              : 'rounded-xl px-4 py-2 text-sm font-bold text-slate-400 transition hover:bg-slate-800 hover:text-slate-200'"
+          >
+            {{ exerciseTypeLabel(type.name) }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="mt-5 flex items-center justify-between gap-4">
+      <p class="text-sm text-slate-500">
+        {{ filteredWorkouts().length }} {{ filteredWorkouts().length === 1 ? 'trening' : 'treninga' }}
+      </p>
+      <p class="text-xs text-slate-600">Najnoviji treninzi su prikazani prvi</p>
+    </div>
+
+    @if (filteredWorkouts().length === 0) {
+      <div class="mt-4 rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
+        <p class="font-bold text-slate-200">Nema treninga ove vrste</p>
+        <p class="mt-2 text-sm text-slate-500">Odaberi drugu vrstu ili prikaži sve treninge.</p>
+        <button type="button" (click)="filterByExerciseType(null)" class="mt-5 text-sm font-bold text-orange-400 hover:text-orange-300">
+          Prikaži sve treninge
+        </button>
+      </div>
+    } @else {
+      <div class="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        @for (workout of filteredWorkouts(); track workout.id) {
+          <app-workout-card
+            [workout]="workout"
+            (editRequested)="openEditForm($event)"
+            (deleteRequested)="requestDelete($event)"
+          />
+        }
+      </div>
+    }
+  }
 </section>
+
+@if (formOpen()) {
+  <app-workout-form-dialog
+    [exerciseTypes]="exerciseTypes()"
+    [workout]="editingWorkout()"
+    [submitting]="saving()"
+    [serverError]="formError()"
+    (cancelled)="closeForm()"
+    (submitted)="saveWorkout($event)"
+  />
+}
+
+@if (workoutToDelete(); as workout) {
+  <app-delete-workout-dialog
+    [workout]="workout"
+    [deleting]="deleting()"
+    (cancelled)="cancelDelete()"
+    (confirmed)="confirmDelete()"
+  />
+}

@@ -1,0 +1,31 @@
+<fieldset>
+  <legend class="mb-3 text-sm font-semibold text-slate-200">Vrsta treninga</legend>
+  <div class="grid gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Vrsta treninga">
+    @for (type of exerciseTypes(); track type.id) {
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="selectedId() === type.id"
+        (click)="select(type.id)"
+        class="group relative min-h-28 overflow-hidden rounded-xl border text-left transition"
+        [class.border-orange-400]="selectedId() === type.id"
+        [class.ring-2]="selectedId() === type.id"
+        [class.ring-orange-500/30]="selectedId() === type.id"
+        [class.border-slate-700]="selectedId() !== type.id"
+      >
+        <img
+          [src]="presentation(type.name).imageUrl"
+          [alt]="presentation(type.name).imageAlt"
+          class="absolute inset-0 size-full object-cover opacity-50 grayscale-[20%] transition duration-300 group-hover:scale-105 group-hover:opacity-65"
+        />
+        <span class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/65 to-transparent"></span>
+        <span class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3">
+          <span class="text-sm font-black text-white">{{ presentation(type.name).label }}</span>
+          @if (selectedId() === type.id) {
+            <span class="grid size-5 place-items-center rounded-full bg-orange-500 text-xs font-black text-white" aria-hidden="true">✓</span>
+          }
+        </span>
+      </button>
+    }
+  </div>
+</fieldset>

@@ -1,0 +1,157 @@
+<div class="fixed inset-0 z-[70] overflow-y-auto bg-slate-950/85 px-4 py-6 backdrop-blur-sm sm:px-6" role="presentation">
+  <section
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="workout-form-title"
+    class="mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl shadow-black/50"
+  >
+    <header class="flex items-start justify-between gap-5 border-b border-slate-800 px-5 py-5 sm:px-7">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-orange-400">
+          {{ workout() ? 'Izmjena aktivnosti' : 'Nova aktivnost' }}
+        </p>
+        <h2 id="workout-form-title" class="mt-1 text-2xl font-black text-white">
+          {{ workout() ? 'Izmijeni trening' : 'Dodaj trening' }}
+        </h2>
+      </div>
+      <button
+        type="button"
+        (click)="cancelled.emit()"
+        [disabled]="submitting()"
+        class="grid size-10 place-items-center rounded-xl border border-slate-700 text-xl text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
+        aria-label="Zatvori formu"
+      >
+        ×
+      </button>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-7 p-5 sm:p-7" novalidate>
+      <div>
+        <app-exercise-type-selector
+          [exerciseTypes]="exerciseTypes()"
+          [selectedId]="form.controls.exerciseTypeId.value"
+          (selectedIdChange)="selectExerciseType($event)"
+        />
+        @if (form.controls.exerciseTypeId.touched && form.controls.exerciseTypeId.invalid) {
+          <p class="mt-2 text-xs text-red-400">Odaberi vrstu treninga.</p>
+        }
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-3">
+        <div class="sm:col-span-1">
+          <label for="workout-started-at" class="mb-2 block text-sm font-semibold text-slate-200">Datum i vrijeme</label>
+          <input
+            id="workout-started-at"
+            type="datetime-local"
+            formControlName="startedAt"
+            [max]="maximumStartedAt"
+            class="w-full rounded-xl border border-slate-700 bg-slate-950/55 px-3 py-3 text-sm text-slate-100 transition hover:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
+          />
+          <div class="mt-1 min-h-5 text-xs text-red-400">
+            @if (form.controls.startedAt.touched && form.controls.startedAt.hasError('required')) {
+              Unesi datum i vrijeme treninga.
+            } @else if (form.controls.startedAt.touched && form.controls.startedAt.hasError('futureDate')) {
+              Trening ne može biti u budućnosti.
+            }
+          </div>
+        </div>
+
+        <div>
+          <label for="workout-duration" class="mb-2 block text-sm font-semibold text-slate-200">Trajanje u minutima</label>
+          <input
+            id="workout-duration"
+            type="number"
+            formControlName="durationMinutes"
+            min="1"
+            inputmode="numeric"
+            class="w-full rounded-xl border border-slate-700 bg-slate-950/55 px-4 py-3 text-slate-100 transition hover:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
+          />
+          <div class="mt-1 min-h-5 text-xs text-red-400">
+            @if (form.controls.durationMinutes.touched && form.controls.durationMinutes.invalid) {
+              Trajanje mora biti najmanje 1 minut.
+            }
+          </div>
+        </div>
+
+        <div>
+          <label for="workout-calories" class="mb-2 block text-sm font-semibold text-slate-200">Potrošene kalorije</label>
+          <input
+            id="workout-calories"
+            type="number"
+            formControlName="caloriesBurned"
+            min="0"
+            inputmode="numeric"
+            class="w-full rounded-xl border border-slate-700 bg-slate-950/55 px-4 py-3 text-slate-100 transition hover:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
+          />
+          <div class="mt-1 min-h-5 text-xs text-red-400">
+            @if (form.controls.caloriesBurned.touched && form.controls.caloriesBurned.invalid) {
+              Kalorije ne mogu biti negativne.
+            }
+          </div>
+        </div>
+      </div>
+
+      <app-rating-scale
+        label="Težina treninga"
+        [value]="form.controls.difficulty.value"
+        (valueChange)="selectRating('difficulty', $event)"
+      />
+      @if (form.controls.difficulty.touched && form.controls.difficulty.invalid) {
+        <p class="-mt-5 text-xs text-red-400">Odaberi težinu treninga.</p>
+      }
+
+      <app-rating-scale
+        label="Umor poslije treninga"
+        [value]="form.controls.fatigue.value"
+        (valueChange)="selectRating('fatigue', $event)"
+      />
+      @if (form.controls.fatigue.touched && form.controls.fatigue.invalid) {
+        <p class="-mt-5 text-xs text-red-400">Odaberi osjećaj umora.</p>
+      }
+
+      <div>
+        <div class="mb-2 flex items-center justify-between gap-4">
+          <label for="workout-notes" class="text-sm font-semibold text-slate-200">Bilješka <span class="font-normal text-slate-500">(nije obavezno)</span></label>
+          <span class="text-xs text-slate-600">{{ form.controls.notes.value.length }}/1000</span>
+        </div>
+        <textarea
+          id="workout-notes"
+          formControlName="notes"
+          maxlength="1000"
+          rows="3"
+          placeholder="Kako je protekao trening?"
+          class="w-full resize-none rounded-xl border border-slate-700 bg-slate-950/55 px-4 py-3 text-slate-100 placeholder:text-slate-600 transition hover:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
+        ></textarea>
+      </div>
+
+      @if (serverError(); as message) {
+        <div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
+          {{ message }}
+        </div>
+      }
+
+      <footer class="flex flex-col-reverse gap-3 border-t border-slate-800 pt-6 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          (click)="cancelled.emit()"
+          [disabled]="submitting()"
+          class="rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold text-slate-300 transition hover:bg-slate-800 disabled:opacity-50"
+        >
+          Odustani
+        </button>
+        <button
+          type="submit"
+          [disabled]="form.invalid || submitting()"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          @if (submitting()) {
+            <span class="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true"></span>
+            Čuvanje...
+          } @else {
+            {{ workout() ? 'Sačuvaj izmjene' : 'Dodaj trening' }}
+          }
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

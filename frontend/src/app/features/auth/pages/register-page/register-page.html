@@ -104,16 +104,16 @@
       </div>
 
       <ul id="password-requirements" class="mt-3 grid gap-1.5 text-xs sm:grid-cols-2">
-        <li [class]="hasMinimumLength() ? 'text-emerald-400' : 'text-slate-500'">
+        <li [class]="hasMinimumLength() ? 'font-medium text-emerald-400' : 'text-slate-400'">
           {{ hasMinimumLength() ? '✓' : '○' }} Najmanje 8 znakova
         </li>
-        <li [class]="hasUppercaseLetter() ? 'text-emerald-400' : 'text-slate-500'">
+        <li [class]="hasUppercaseLetter() ? 'font-medium text-emerald-400' : 'text-slate-400'">
           {{ hasUppercaseLetter() ? '✓' : '○' }} Jedno veliko slovo
         </li>
-        <li [class]="hasLowercaseLetter() ? 'text-emerald-400' : 'text-slate-500'">
+        <li [class]="hasLowercaseLetter() ? 'font-medium text-emerald-400' : 'text-slate-400'">
           {{ hasLowercaseLetter() ? '✓' : '○' }} Jedno malo slovo
         </li>
-        <li [class]="hasNumber() ? 'text-emerald-400' : 'text-slate-500'">
+        <li [class]="hasNumber() ? 'font-medium text-emerald-400' : 'text-slate-400'">
           {{ hasNumber() ? '✓' : '○' }} Najmanje jedan broj
         </li>
       </ul>
@@ -153,7 +153,7 @@
     <button
       type="submit"
       [disabled]="form.invalid || isSubmitting()"
-      class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-950/30 transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
+      class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 text-sm font-bold text-white transition enabled:shadow-[0_0_28px_rgba(249,115,22,0.22)] enabled:hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
     >
       @if (isSubmitting()) {
         <span class="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true"></span>
