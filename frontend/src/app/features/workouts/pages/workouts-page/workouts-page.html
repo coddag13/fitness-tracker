@@ -1,0 +1,35 @@
+<section aria-labelledby="workouts-title">
+  <header>
+    <p class="text-sm font-semibold text-orange-400">Istorija aktivnosti</p>
+    <h1 id="workouts-title" class="mt-1 text-3xl font-bold tracking-tight text-white sm:text-4xl">Treninzi</h1>
+    <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+      Svi treninzi na jednom mjestu, pregledno organizovani kroz kartice.
+    </p>
+  </header>
+
+  <div class="mt-8 grid gap-4 md:grid-cols-3">
+    @for (type of [
+      { name: 'Kardio', description: 'Trčanje i izdržljivost', accent: 'from-orange-500/25' },
+      { name: 'Trening snage', description: 'Snaga i razvoj mišića', accent: 'from-rose-500/25' },
+      { name: 'Fleksibilnost', description: 'Mobilnost i oporavak', accent: 'from-emerald-500/25' },
+    ]; track type.name) {
+      <article class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+        <div [class]="'absolute inset-0 bg-gradient-to-br ' + type.accent + ' to-transparent'" aria-hidden="true"></div>
+        <div class="relative">
+          <p class="font-bold text-white">{{ type.name }}</p>
+          <p class="mt-1 text-sm text-slate-400">{{ type.description }}</p>
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="mt-8 grid min-h-72 place-items-center rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
+    <div>
+      <div class="mx-auto grid size-14 place-items-center rounded-2xl bg-slate-800 text-2xl text-slate-400">◇</div>
+      <h2 class="mt-4 text-lg font-bold text-slate-200">Još nema zabilježenih treninga</h2>
+      <p class="mt-2 max-w-md text-sm leading-6 text-slate-500">
+        Kada dodaš prvi trening, ovdje ćeš pronaći sve njegove detalje.
+      </p>
+    </div>
+  </div>
+</section>
