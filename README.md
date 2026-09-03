@@ -26,6 +26,12 @@ The project was built as a technical assignment with an emphasis on clear separa
 - [Possible Future Improvements](#possible-future-improvements)
 - [Author](#author)
 
+
+## 🎥 Demo
+
+[Watch the Fitness Tracker demo](https://drive.google.com/file/d/17KVHrK1Dvwr6nPf958FVc3L2ODwNB8Zc/view?usp=drive_link)
+
+
 ## Features
 
 ### Authentication
